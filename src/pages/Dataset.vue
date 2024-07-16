@@ -77,9 +77,6 @@
     </Table>
 
     <div class="overflow-x-auto mt-10 mb-4" v-show="resultData.length > 0">
-      <h1 class="font-bold text-gray-800 text-2xl mb-4">
-        RMSE: {{ errorResult }}
-      </h1>
       <table class="table-auto w-full border-collapse">
         <thead>
           <tr>
@@ -87,7 +84,9 @@
             <th class="px-4 py-2 border border-gray-800">Jumlah</th>
             <th class="px-4 py-2 border border-gray-800">Level</th>
             <th class="px-4 py-2 border border-gray-800">Trend</th>
-            <th class="px-4 py-2 border border-gray-800">Peramalan</th>
+            <th class="px-4 py-2 border border-gray-800">
+              Peramalan (Normalisasi)
+            </th>
             <th class="px-4 py-2 border border-gray-800">Error</th>
           </tr>
         </thead>
@@ -123,6 +122,13 @@
         </tbody>
       </table>
     </div>
+    <apexchart
+      type="line"
+      height="350"
+      :options="chartOptions"
+      :series="chartSeries"
+      v-show="resultData.length > 0"
+    ></apexchart>
   </div>
 </template>
 
@@ -145,12 +151,14 @@ const forecastStep = ref(false);
 const realDataset = ref([]);
 const normalizeDataset = ref([]);
 const resultData = ref([]);
+const combineForecastData = ref([]);
 const predict = ref([]);
+const chartOptions = ref({});
+const chartSeries = ref([]);
 
 const predictSteps = ref(0);
 const alphaValue = ref(0);
 const betaValue = ref(0);
-const errorResult = ref(0);
 
 const setRealDataset = () => {
   delayGenerate.value = true;
@@ -180,7 +188,7 @@ const setGoldenSection = () => {
 };
 
 const forecast = () => {
-  const { result, predictDump, RMSE } = DesHolt(
+  const { result, predictDump, combineForecast } = DesHolt(
     normalizeDataset.value,
     alphaValue.value,
     betaValue.value,
@@ -189,6 +197,49 @@ const forecast = () => {
 
   resultData.value = result;
   predict.value = predictDump;
-  errorResult.value = RMSE;
+  combineForecastData.value = combineForecast;
+
+  chartSeries.value = [
+    {
+      name: "Data PMB",
+      data: result.map((item) => item.normalize),
+    },
+    {
+      name: "Peramalan PMB",
+      data: combineForecast,
+    },
+  ];
+
+  chartOptions.value = {
+    chart: {
+      height: 350,
+      type: "line",
+    },
+
+    stroke: {
+      curve: "smooth",
+    },
+    title: {
+      text: "Grafik Perbandingan Data Asli Dengan Peramalan PMB",
+      align: "left",
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    markers: {
+      size: 5, // Adjust the size of the markers
+    },
+    xaxis: {
+      categories: result.map((_, index) => index + 1),
+    },
+    yaxis: {
+      title: {
+        text: "Value",
+      },
+    },
+    legend: {
+      position: "top",
+    },
+  };
 };
 </script>

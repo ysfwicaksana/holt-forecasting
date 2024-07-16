@@ -47,6 +47,8 @@ export const DesHolt = (data, alpha, beta, predictSteps = null) => {
     }
   }
 
+  const combineForecast = forecastDump.concat(predictDump);
+
   //join the result
   let result = [];
   forecastDump.forEach((value, i) => {
@@ -59,18 +61,10 @@ export const DesHolt = (data, alpha, beta, predictSteps = null) => {
     });
   });
 
-  //calculate RMSE
-  let sum = 0;
-  for (let i = 0; i < errorDump.length; i++) {
-    sum += errorDump[i];
-  }
-
-  let RMSE = Math.sqrt(sum / errorDump.length);
-
   return {
     result,
     predictSteps,
     predictDump,
-    RMSE,
+    combineForecast,
   };
 };
