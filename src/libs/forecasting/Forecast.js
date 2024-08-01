@@ -1,4 +1,12 @@
-export const DesHolt = (data, alpha, beta, predictSteps = null) => {
+import { getMin, getMax } from "../normalize/minMax";
+
+export const DesHolt = (
+  realDataset,
+  data,
+  alpha,
+  beta,
+  predictSteps = null
+) => {
   let normalizeDump = [];
   let levelDump = [];
   let trendDump = [];
@@ -47,17 +55,18 @@ export const DesHolt = (data, alpha, beta, predictSteps = null) => {
     }
   }
 
-  const combineForecast = forecastDump.concat(predictDump);
+  // const combineForecast = forecastDump.concat(predictDump);
 
   //join the result
   let result = [];
   forecastDump.forEach((value, i) => {
     result.push({
       normalize: normalizeDump[i],
-      level: levelDump[i],
-      trend: trendDump[i],
       forecast: value,
-      error: errorDump[i],
+      denormalize: Math.round(
+        value * (getMax(realDataset) - getMin(realDataset)) +
+          getMin(realDataset)
+      ),
     });
   });
 
@@ -65,6 +74,6 @@ export const DesHolt = (data, alpha, beta, predictSteps = null) => {
     result,
     predictSteps,
     predictDump,
-    combineForecast,
+    // combineForecast,
   };
 };

@@ -1,11 +1,14 @@
 <template>
   <div class="overflow-x-auto mt-10 mb-4 lg:w-[720px]">
-    <table class="table-auto w-full border-collapse" v-show="data.length > 0">
+    <table
+      class="table-auto w-full lg:w-1/2 border-collapse"
+      v-show="data.length > 0"
+    >
       <thead>
         <tr>
-          <th class="px-4 py-2 border border-gray-800 w-10">No</th>
+          <th class="border border-gray-800 w-10">No</th>
           <th
-            class="px-4 py-2 border border-gray-800"
+            class="border border-gray-800"
             v-for="(col, i) in columns"
             :key="i"
           >
@@ -15,8 +18,8 @@
       </thead>
       <tbody>
         <tr v-for="(row, i) in data" :key="i">
-          <td class="px-4 py-2 border border-gray-800">{{ i + 1 }}</td>
-          <td class="px-4 py-2 border border-gray-800">{{ row }}</td>
+          <td class="px-4 border border-gray-800">{{ i + 1 }}</td>
+          <td class="px-4 border border-gray-800">{{ row }}</td>
         </tr>
       </tbody>
     </table>
